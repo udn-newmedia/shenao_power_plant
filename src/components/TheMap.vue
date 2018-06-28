@@ -14,7 +14,7 @@
         <p>「我其實已經不太記得細節了，只知道很痛。」今年21歲的阿邦（化名）淡淡地說，語氣平靜的像在談論別人的事。第一眼見到阿邦，他笑得燦</p>
       </div>
       <ul class="marker_info">
-        <li><span :style="{backgroundColor: ObserveColor}"></span>觀測站</li>
+        <li><span class="observe_site" :style="{backgroundColor: ObserveColor}"></span>觀測站</li>
         <li><span :style="{backgroundColor: PollutionColor}"></span>汙染原址</li>
       </ul>
     </div>
@@ -42,19 +42,24 @@
       <div class="title_main">
         <p>TAIPEI 101</p>
       </div>
-    </div>              
+    </div>
+    <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToBigTaipei">
+      <div class="title_main">
+        <p>看見雙北</p>
+      </div>
+    </div>           
   </div>
 </template>
 
 <script>
 import mapboxgl from 'mapbox-gl';
-import _once from 'lodash.once';
-import _throttle from 'lodash.throttle';
 import _debounce from 'lodash.debounce';
 import ColumnOne from '../base_comp/ColumnOne';
+import srcRWD from '../mixin/srcRWD.js';
 import Share from '../base_comp/Share';
 export default {
   name: 'TheMap',
+  mixins: [srcRWD],
   components: {
     ColumnOne,
     Share,
@@ -64,24 +69,24 @@ export default {
       url: 'https://udn.com/upf/newmedia/2018_data/orange-project/',
       wH: window.innerHeight,
       Map: null,
-      Point_Opacity: 0,
+      isFlyed: false,
       ObserveColor: '#09ddf5',
       Observatory: [
-        [25.1286484, 121.7563881, '基隆'],
-        [25.0659879, 121.6386743, '汐止'],
+        [25.1286484, 121.7563881, '基隆站'],
+        [25.0659879, 121.6386743, '汐止站'],
         [25.1797314, 121.6874749, '萬里'],
         [24.9775082, 121.5360221, '新店'],
         [24.984116, 121.4491731, '土城'],   
         [25.0122662, 121.4562882, '板橋'],
         [25.032913, 121.4332029, '新莊'],
         [25.069017, 121.4780249, '菜寮'],
-        [25.0766879, 121.3627617, '林口'],
+        [25.0766879, 121.3627617, '林口站'],
         [25.1660761, 121.4460768, '淡水'],
         [25.1059048, 121.5125556, '士林'],
         [25.0619756, 121.5235568, '中山'],
         [25.0475499, 121.5085038, '萬華'],
         [25.0205827, 121.5265888, '古亭'],
-        [25.0480174, 121.5558915, '松山'],
+        [25.0480174, 121.5558915, '松山站'],
         [25.0641802, 121.5108575, '大同'],
         [24.9953096, 121.302173, '桃園']
       ],
@@ -167,104 +172,129 @@ export default {
   methods: {
     initMap () {
       mapboxgl.accessToken ="pk.eyJ1IjoiYmlsbGZ1bG8iLCJhIjoiY2ppMWZqZDJvMHBhZjNxbGsxN294ZnNtdyJ9.b8mAr_ZiEAPw6hQP6UF9Ng";
+      const vm = this;
       this.Map = new mapboxgl.Map({
         container: "map",
         // style: "mapbox://styles/anitpiggy/cji414k0613dk2smzli6oylon",
-        style: 'mapbox://styles/billfulo/cji5qqsn00ld52sry1ppzugir',
-        center: [122.541615, 23.511117],
-        zoom: 7.1,
+        style: 'mapbox://styles/billfulo/cjiybqbem3cy62rpm0ylwaox6',
+        center: vm.srcRWD([121.161722, 23.618136], [122.541615, 23.511117]),
+        zoom: vm.srcRWD(6.5, 7.1),
         interactive: false,
       });       
     },
+    goInitail: _debounce(function() {
+      const vm = this;
+      vm.Map.flyTo({
+        center: vm.srcRWD([121.161722, 23.618136], [122.541615, 23.511117]),
+        zoom: vm.srcRWD(6.5, 7.1),      
+        bearing: 0,
+        pitch: 0,                
+      })
+    }, 1500, {trailing: false, leading: true}),
     goShenao: _debounce(function () {
       const vm = this;
-      console.log('fly~~~')
+      console.log('深澳電廠')
       $('.observe, .pollution').css({
         'opacity': 0,
         'transition': '0s',
       });
       vm.Map.flyTo({
-        center: [121.832633, 25.126697],
+        center: vm.srcRWD([121.825389, 25.126258], [121.832633, 25.126697]),
         bearing: 0,
         pitch: 0,        
         speed: 1,
-        zoom: 14.5,
+        zoom: vm.srcRWD(12.85, 14.5),
       })
-      vm.Map.on('moveend', function () {
+      vm.Map.once('moveend', function () {
         console.log('moveend')
         $('.observe, .pollution').css({
+          'width': '20px',
+          'height': '20px',          
           'transition': 'opacity 666ms',
           'opacity': 1
         });
+        $('.station_name').css({
+          'opacity': 1
+        })        
       })
-    }, 5555, {trailing: false, leading: true}),
+    }, 1500, {trailing: false, leading: true}),
     goStation: _debounce(function () {
       // 基隆
       const vm = this;
-      console.log('station');
+      console.log('基隆站');
       vm.Map.setPaintProperty('keelung_river', 'fill-opacity', 1);
       vm.Map.flyTo({
-        center: [121.79922, 25.110937],
+        center: vm.srcRWD([121.798457, 25.120810], [121.79922, 25.110937]),
         bearing: -106.00,
         pitch: 56.00,
-        zoom: 13,
+        zoom: vm.srcRWD(12, 13),
         speed: .8,
       })     
-    }, 5555, {trailing: false, leading: true}),
+    }, 1500, {trailing: false, leading: true}),
     goStation_2: _debounce(function () {
       // 汐止
       const vm = this;
-      console.log('station_2');
+      console.log('汐止站');
       vm.Map.flyTo({
-        center: [121.63867, 25.065980],
+        center: vm.srcRWD([121.589168, 25.046874], [121.63867, 25.065980]),
         bearing: -106.00,
         pitch: 56.00,
-        zoom: 15.04,
+        zoom: vm.srcRWD(11.8, 15.04),
         speed: .8,
       })
-    }, 5555, {trailing: false, leading: true}), 
+    }, 2222, {trailing: false, leading: true}), 
     goStation_3: _debounce(function () {
       // 松山
       const vm = this;
-      console.log('station_2');
+      console.log('松山站');
       vm.Map.flyTo({
-        center: [121.558173, 25.051571],
+        center: vm.srcRWD([121.574611, 25.05], [121.558173, 25.051571]),
         bearing: -106.00,
         pitch: 56.00,
-        zoom: 15.92,
+        zoom: vm.srcRWD(13.8, 15.92),
         speed: .8,
       })
-    }, 5555, {trailing: false, leading: true}),         
+    }, 2222, {trailing: false, leading: true}),         
     showTaipei: _debounce(function () {
       const vm = this;
-      console.log('Taipei');
+      console.log('Taipei101');
       vm.Map.flyTo({
-        center: [121.5671699, 25.0339031],
+        center: vm.srcRWD([121.564427, 25.033671], [121.5671699, 25.0339031]),
         bearing: 15,
         pitch: 56,
-        zoom: 16.22,
+        zoom: vm.srcRWD(15.68, 15.88),
         speed: .8,
       })
-    }, 5555, {trailing: false, leading: true}),      
+    }, 2222, {trailing: false, leading: true}), 
+    showBigTaipei: _debounce(function () {
+      const vm = this;
+      console.log('看見雙北');
+      vm.Map.flyTo({
+        center: vm.srcRWD([121.604528, 25.000228], [121.684528, 25.062228]),
+        bearing: 0,
+        pitch: 0,
+        zoom: vm.srcRWD(8.5, 10.74),
+        speed: .8,
+      })
+    }, 2222, {trailing: false, leading: true}),          
     addMarker (Lat, Lng, name, color, station) {
       const vm = this;
       const el = document.createElement('div');
       el.className = name;
-      if (name === 'observe') {
-        if(station === '基隆' || station === '汐止' || station === '松山') {
-          const text = document.createElement('span');
-          text.className = 'station_name';
-          text.innerText = station
-          el.appendChild(text)
-        }
+      if(station === '基隆站' || station === '汐止站' || station === '松山站' || station === '深澳發電廠' || station === '林口站') {
+        const text = document.createElement('span');
+        text.className = 'station_name';
+        text.innerText = station
+        el.appendChild(text)
       }
       $('.'+ name).css({
         "height": 10 +'px',
         "width": 10 +'px',
         "border-radius": (name === 'pollution'? 50 : 0) +'%',
         "background-color": color,
+        // "border": '1px solid' + color,
         "transition": 'opacity 666ms',
-        "opacity": vm.Point_Opacity,
+        "opacity": 0,
         "cursor": "pointer",
         "z-index": 3,
       })
@@ -281,7 +311,7 @@ export default {
     },    
     addPollution () {
       for(let i = 0; i < this.Pollution.length; i++) {
-        this.addMarker(this.Pollution[i][0], this.Pollution[i][1], 'pollution', this.PollutionColor)
+        this.addMarker(this.Pollution[i][0], this.Pollution[i][1], 'pollution', this.PollutionColor,  this.Pollution[i][2])
       }
     },
     add3Dbuilding () {
@@ -313,31 +343,87 @@ export default {
     },
     handle_scroll () {
       const vm = this
-      console.log(window.pageYOffset)
-      const curOffset =  window.pageYOffset;
-      if(curOffset > this.$refs.showMarker.offsetTop - this.wH*0.2 && this.Point_Opacity === 0) {
-        this.Point_Opacity = 1;
-        $('.observe, .pollution').css('opacity', 1);
+      const curOffset = window.pageYOffset;
+      if(this.isFlyed && curOffset < this.$refs.showMarker.offsetTop - this.wH*0.2){
+        console.count('goInitail')
+        $('.observe, .pollution').css('opacity', 0);
+      }
+      if(curOffset > this.$refs.showMarker.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToShenao.offsetTop - this.wH*0.2) {
+        this.isFlyed = true;
+        this.goInitail()
+        $('.observe, .pollution').css({
+          'width': '10px',
+          'height': '10px',
+          'opacity': 1
+        });
+        $('.station_name').css({
+          'opacity': 0
+        })            
         console.log('tick')
       }
       if(curOffset > this.$refs.FlyToShenao.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToStation.offsetTop - this.wH*0.2) {
-        this.goShenao();
-        $('.observe, .pollution').css({
-          'width': '20px',
-          'height': '20px'
-          });               
+        this.isFlyed = true;
+        this.goShenao();            
       }
       if(curOffset > this.$refs.FlyToStation.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToStation_2.offsetTop - this.wH*0.2) {
         this.goStation();
+        $('.observe, .pollution').css({
+          'width': '10px',
+          'height': '10px',
+          'opacity': 1
+        });        
+        $('.station_name').css({
+          'opacity': 1
+        })        
+        this.isFlyed = true;
       }
-      if(curOffset > this.$refs.FlyToStation_2.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToTaipei.offsetTop - this.wH*0.2){
-        this.goStation_2();
+      if(curOffset > this.$refs.FlyToStation_2.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToStation_3.offsetTop - this.wH*0.2){
+        this.goStation_2();    
+        $('.observe, .pollution').css({
+          'width': '10px',
+          'height': '10px',
+          'opacity': 1
+        });  
+        $('.station_name').css({
+          'opacity': 1
+        })                 
+        this.isFlyed = true;
       }
       if(curOffset > this.$refs.FlyToStation_3.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToTaipei.offsetTop - this.wH*0.2){
         this.goStation_3();
+        $('.observe, .pollution').css({
+          'width': '10px',
+          'height': '10px',
+          'opacity': 1
+        }); 
+        $('.station_name').css({
+          'opacity': 1
+        })               
+        this.isFlyed = true;
       }      
-      if(curOffset > this.$refs.FlyToTaipei.offsetTop - this.wH*0.2) {
-        this.showTaipei()
+      if(curOffset > this.$refs.FlyToTaipei.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToBigTaipei.offsetTop - this.wH*0.2) {
+        this.showTaipei();
+        $('.observe, .pollution').css({
+          'width': '10px',
+          'height': '10px',
+          'opacity': 1
+        });       
+        $('.station_name').css({
+          'opacity': 1
+        })         
+        this.isFlyed = true;
+      }
+      if(curOffset > this.$refs.FlyToBigTaipei.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToBigTaipei.offsetTop + this.wH) {
+        $('.observe, .pollution').css({
+          'width': '10px',
+          'height': '10px',
+          'opacity': 1
+        });
+        $('.station_name').css({
+          'opacity': 1
+        })
+        this.showBigTaipei();
+        this.isFlyed = true;
       }
     },    
   },
@@ -356,7 +442,8 @@ export default {
         vm.addPollution()      
         console.log(layers)
       })
-      window.addEventListener('scroll', this.handle_scroll);   
+      window.addEventListener('scroll', this.handle_scroll);
+      this.handle_scroll();
     })
   }
 }
@@ -416,6 +503,9 @@ export default {
       height: 8px;
       border-radius: 50%;
     }
+    .observe_site{
+      border-radius: 0;
+    }
   }
 }
 .station_name{
@@ -425,5 +515,8 @@ export default {
   width: 25px;
   margin-left: -2.5px;
   white-space: nowrap;
+  opacity: 0;
+  font-weight: bold;
+  font-size: 1.2em;
 }
 </style>
