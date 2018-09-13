@@ -1,7 +1,7 @@
 <template>
-  <div style="height:100%;" :id="menuText">
+  <div :id="menuText" class="section-bg-layer">
     <div class="section-bg" :style="{backgroundImage: 'url(' + bgRWD() + ')'}"></div>
-    <div class="img-say">{{imgsay}}</div>
+    <div v-if="imgsay !== undefined" class="img-say">{{imgsay}}</div>
   </div>
 </template>
 
@@ -45,9 +45,12 @@ export default {
 </script>
 
 <style scoped>
-
+    .section-bg-layer{
+        position: relative;
+        z-index: 5;
+    }
     .section-bg{
-        height: 100%;
+        height: 100vh;
         background-position: center center;
         background-repeat: no-repeat;
         background-size: cover;

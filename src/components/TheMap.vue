@@ -1,51 +1,63 @@
 <template>
-  <div class="map_container">
+  <div class="map_container" :style="{zIndex: map_zIndex}">
     <div id="map" :style="{height: wH + 'px'}"></div>
     <div class="title_box" :style="{height: wH + 'px'}">
       <div class="title_main">
-        <h1>台北，下一個北京？</h1>
-        <h1>拆穿深澳電廠神話</h1>
-        <p>「我其實已經不太記得細節了，只知道很痛。」今年21歲的阿邦（化名）淡淡地說，語氣平靜的像在談論別人的事。第一眼見到阿邦，他笑得燦</p>
+        <h1>乾淨的煤？<br>拆穿深澳電廠的六大謊言</h1>
+        <p>今年3月，深澳電廠以一票之差闖關成功，預計2025年完工發電，屆時至少台北、新北、桃園、基隆及宜蘭共950萬、全體台灣4成的人口受影響。《聯合報》用地圖帶你看，深澳電廠的潛在危機。</p>
         <Share :href="url"></Share>
       </div>
+      <ul v-if="false" class="marker_info">
+        <!-- <li><span class="observe_site" :style="{backgroundColor: ObserveColor}"></span>觀測站</li> -->
+        <li><span :style="{backgroundColor: PollutionColor}"></span>全國前30大固定汙染源</li>
+        <li>資料來源：環保署</li>
+      </ul>      
     </div>
     <div class="title_box" :style="{height: wH + 'px'}" ref="showMarker">
       <div class="title_main">
-        <p>「我其實已經不太記得細節了，只知道很痛。」今年21歲的阿邦（化名）淡淡地說，語氣平靜的像在談論別人的事。第一眼見到阿邦，他笑得燦</p>
+        <p>這是今年3月的台灣，差到臨界的空氣品質（紫紅處），幾乎籠罩整個西半部都會區。</p>
+        <p><br></p>
+        <p>資料來源：環保署空氣品質監測網</p>
+        <p>資料時間：2018/3/3 11:00</p>
+        <div class="PM25_progress">
+          <img :src="PM_chart" alt="PM2.5色尺">
+        </div>        
       </div>
-      <ul class="marker_info">
-        <li><span class="observe_site" :style="{backgroundColor: ObserveColor}"></span>觀測站</li>
-        <li><span :style="{backgroundColor: PollutionColor}"></span>汙染原址</li>
-      </ul>
     </div>
     <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToShenao">
       <div class="title_main">
-        <p>深澳電廠</p>
+        <p>我們現在，要在這裡再蓋一座燃煤電廠。</p>
+        <p><br></p>
+        <p>據調查，台灣約5成致癌重金屬，來自燃煤電廠與燃煤汽電共生廠。</p>
       </div>
     </div>    
     <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToStation">
       <div class="title_main">
-        <p>基隆觀測</p>
+        <p>學者依據地形與氣候模擬，發現深澳電廠的汙染物，將順著東北季風，沿地勢較低的基隆河谷逸散。</p>
       </div>
     </div>   
     <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToStation_2">
       <div class="title_main">
-        <p>汐止觀測</p>
+        <p>途經汐止、南港、內湖</p>
       </div>
     </div>  
-    <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToStation_3">
+    <!-- <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToStation_3">
       <div class="title_main">
         <p>松山觀測</p>
       </div>
-    </div>      
+    </div>       -->
     <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToTaipei">
       <div class="title_main">
-        <p>TAIPEI 101</p>
+        <p>從松山區、信義區進入台北市。</p>
+        <p><br></p>
+        <p>煙流依季節不同，也逸散至桃園、宜蘭等縣市。研究顯示，汙染物最遠可覆蓋到屏東地區。</p>
       </div>
     </div>
     <div class="title_box" :style="{height: wH + 'px'}" ref="FlyToBigTaipei">
       <div class="title_main">
-        <p>看見雙北</p>
+        <p>除了深澳電廠，台北盆地還被林口燃煤、協和重油電廠包夾。</p>
+        <p><br></p>
+        <p>都市熱島效應，將使空汙從四面八方流入且沉積在盆地。</p>
       </div>
     </div>           
   </div>
@@ -57,6 +69,8 @@ import _debounce from 'lodash.debounce';
 import ColumnOne from '../base_comp/ColumnOne';
 import srcRWD from '../mixin/srcRWD.js';
 import Share from '../base_comp/Share';
+
+import PM_chart from '../assets/chart_pm2.5.svg'
 export default {
   name: 'TheMap',
   mixins: [srcRWD],
@@ -66,14 +80,23 @@ export default {
   },
   data() {
     return {
-      url: 'https://udn.com/upf/newmedia/2018_data/orange-project/',
+      map_zIndex: 3,
+      PM_chart: PM_chart,
+      url: 'https://udn.com/upf/newmedia/2018_data/shenao_power_plant/index.html',
       wH: window.innerHeight,
       Map: null,
       isFlyed: false,
-      ObserveColor: '#09ddf5',
+      TaipeiAttractions: [
+        [25.033408, 121.564099, '台北101'],
+        // [25.0400354, 121.5580565,'國父紀念館']
+      ],
+      ObserveColor: '#005982',
       Observatory: [
-        [25.1286484, 121.7563881, '基隆站'],
-        [25.0659879, 121.6386743, '汐止站'],
+        [25.10898, 121.7081, '基隆'],
+        [25.07331322, 121.6546992, '汐止'],
+        [25.03600934, 121.6097573, '南港'],
+        [25.0480174, 121.5558915, '松山'],
+        [25.08370623, 121.5923828, '內湖'],
         [25.1797314, 121.6874749, '萬里'],
         [24.9775082, 121.5360221, '新店'],
         [24.984116, 121.4491731, '土城'],   
@@ -86,18 +109,17 @@ export default {
         [25.0619756, 121.5235568, '中山'],
         [25.0475499, 121.5085038, '萬華'],
         [25.0205827, 121.5265888, '古亭'],
-        [25.0480174, 121.5558915, '松山站'],
         [25.0641802, 121.5108575, '大同'],
-        [24.9953096, 121.302173, '桃園']
+        [24.9953096, 121.302173, '桃園'],
       ],
       PollutionColor: '#e60012',
       Pollution: [
-        [25.127564, 121.816581, '深澳發電廠'],
-        [25.119648, 121.298975, '林口發電廠'],
+        [25.127564, 121.816581, '深澳電廠'],
+        [25.119648, 121.298975, '林口電廠'],
         [24.213376, 120.486809, '台中發電廠'],
         [24.309016, 121.763163, '和平電廠'],
         [23.802677, 120.190312, '麥寮發電廠'],
-        [25.157499, 121.739728, '協和發電廠'],
+        [25.157499, 121.739728, '協和電廠'],
         [22.859005, 120.200540, '興達發電廠'],
         [22.536259, 120.335630, '大林發電廠'],
         [22.552783, 120.354949, '中國鋼鐵'],
@@ -171,15 +193,20 @@ export default {
   },
   methods: {
     initMap () {
-      mapboxgl.accessToken ="pk.eyJ1IjoiYmlsbGZ1bG8iLCJhIjoiY2ppMWZqZDJvMHBhZjNxbGsxN294ZnNtdyJ9.b8mAr_ZiEAPw6hQP6UF9Ng";
+      mapboxgl.accessToken ="pk.eyJ1IjoidWRubmV3bWVkaWEiLCJhIjoid3hfdUJ3SSJ9._HfN1wMuqyvmYvwFTDEHIQ";
+      // pc
+      // mapboxgl.accessToken ="pk.eyJ1IjoidWRuIiwiYSI6ImNqaXk5ejlzNjA4YjAzd2xlY2IxNWFrZnAifQ.FYKsa2_7blnEh6u76m8Zfw";
       const vm = this;
       this.Map = new mapboxgl.Map({
         container: "map",
-        // style: "mapbox://styles/anitpiggy/cji414k0613dk2smzli6oylon",
-        style: 'mapbox://styles/billfulo/cjiybqbem3cy62rpm0ylwaox6',
+        style: 'mapbox://styles/udnnewmedia/cjk0iysm51zof2smwohspbwb1',
+        // pc
+        // style: 'mapbox://styles/udn/cjji9s4fd3wtp2ss1ydwdrz64',
         center: vm.srcRWD([121.161722, 23.618136], [122.541615, 23.511117]),
         zoom: vm.srcRWD(6.5, 7.1),
         interactive: false,
+        // refreshExpiredTiles: false,
+        maxTileCacheSize: 50
       });       
     },
     goInitail: _debounce(function() {
@@ -202,32 +229,35 @@ export default {
         center: vm.srcRWD([121.825389, 25.126258], [121.832633, 25.126697]),
         bearing: 0,
         pitch: 0,        
-        speed: 1,
+        speed: 1.2,
         zoom: vm.srcRWD(12.85, 14.5),
       })
       vm.Map.once('moveend', function () {
         console.log('moveend')
         $('.observe, .pollution').css({
-          'width': '20px',
-          'height': '20px',          
+          // 'width': '20px',
+          // 'height': '20px',          
           'transition': 'opacity 666ms',
           'opacity': 1
         });
         $('.station_name').css({
           'opacity': 1
-        })        
+        })    
+        $('.pollution_name').css({
+          'opacity': 1
+        })               
       })
     }, 1500, {trailing: false, leading: true}),
     goStation: _debounce(function () {
       // 基隆
       const vm = this;
       console.log('基隆站');
-      vm.Map.setPaintProperty('keelung_river', 'fill-opacity', 1);
+      // vm.Map.setPaintProperty('keelung_river', 'fill-opacity', 1);
       vm.Map.flyTo({
-        center: vm.srcRWD([121.798457, 25.120810], [121.79922, 25.110937]),
+        center: vm.srcRWD([121.798457, 25.120810], [121.784516, 25.142472]),
         bearing: -106.00,
         pitch: 56.00,
-        zoom: vm.srcRWD(12, 13),
+        zoom: vm.srcRWD(12, 13.69),
         speed: .8,
       })     
     }, 1500, {trailing: false, leading: true}),
@@ -236,30 +266,32 @@ export default {
       const vm = this;
       console.log('汐止站');
       vm.Map.flyTo({
-        center: vm.srcRWD([121.589168, 25.046874], [121.63867, 25.065980]),
+        center: vm.srcRWD([121.589168, 25.046874], [121.628921, 25.08853]),
         bearing: -106.00,
         pitch: 56.00,
-        zoom: vm.srcRWD(11.8, 15.04),
+        zoom: vm.srcRWD(10.8, 13.69),
         speed: .8,
       })
     }, 2222, {trailing: false, leading: true}), 
-    goStation_3: _debounce(function () {
-      // 松山
-      const vm = this;
-      console.log('松山站');
-      vm.Map.flyTo({
-        center: vm.srcRWD([121.574611, 25.05], [121.558173, 25.051571]),
-        bearing: -106.00,
-        pitch: 56.00,
-        zoom: vm.srcRWD(13.8, 15.92),
-        speed: .8,
-      })
-    }, 2222, {trailing: false, leading: true}),         
+    // goStation_3: _debounce(function () {
+    //   // 松山
+    //   const vm = this;
+    //   console.log('松山站');
+    //   this.showAttraction()
+    //   vm.Map.flyTo({
+    //     center: vm.srcRWD([121.574611, 25.05], [121.558173, 25.051571]),
+    //     bearing: -106.00,
+    //     pitch: 56.00,
+    //     zoom: vm.srcRWD(13.8, 14.99),
+    //     speed: .8,
+    //   })
+    // }, 2222, {trailing: false, leading: true}),         
     showTaipei: _debounce(function () {
       const vm = this;
       console.log('Taipei101');
+      this.showAttraction()
       vm.Map.flyTo({
-        center: vm.srcRWD([121.564427, 25.033671], [121.5671699, 25.0339031]),
+        center: vm.srcRWD([121.564427, 25.033671], [121.5651699, 25.0339031]),
         bearing: 15,
         pitch: 56,
         zoom: vm.srcRWD(15.68, 15.88),
@@ -273,7 +305,7 @@ export default {
         center: vm.srcRWD([121.604528, 25.000228], [121.684528, 25.062228]),
         bearing: 0,
         pitch: 0,
-        zoom: vm.srcRWD(8.5, 10.74),
+        zoom: vm.srcRWD(8.5, 10.24),
         speed: .8,
       })
     }, 2222, {trailing: false, leading: true}),          
@@ -281,23 +313,30 @@ export default {
       const vm = this;
       const el = document.createElement('div');
       el.className = name;
-      if(station === '基隆站' || station === '汐止站' || station === '松山站' || station === '深澳發電廠' || station === '林口站') {
+      if(station === '基隆站' 
+         || station === '汐止'
+         || station === '松山'
+         || station === '林口'
+         || station === '基隆'
+         || station === '內湖'
+         || station === '南港'
+         || station === '深澳電廠'
+         || station === '協和電廠'
+         || station === '林口電廠'
+         || station === '台北101') {
         const text = document.createElement('span');
-        text.className = 'station_name';
+        if(station === '深澳電廠'){
+            text.className = 'pollution_name';
+          } else if (
+            station === '協和電廠'
+            || station === '林口電廠') {
+            text.className = 'sub_pollution_name'    
+          } else {
+            text.className = 'station_name';
+          }
         text.innerText = station
         el.appendChild(text)
       }
-      $('.'+ name).css({
-        "height": 10 +'px',
-        "width": 10 +'px',
-        "border-radius": (name === 'pollution'? 50 : 0) +'%',
-        "background-color": color,
-        // "border": '1px solid' + color,
-        "transition": 'opacity 666ms',
-        "opacity": 0,
-        "cursor": "pointer",
-        "z-index": 3,
-      })
       const marker = new mapboxgl.Marker({
         element: el,
       });
@@ -321,7 +360,7 @@ export default {
           'source-layer': 'building',
           'filter': ['==', 'extrude', 'true'],
           'type': 'fill-extrusion',
-          'minzoom': 15,
+          'minzoom': 15.5,
           'paint': {
               'fill-extrusion-color': '#aaa',
 
@@ -341,89 +380,169 @@ export default {
           }
       });      
     },
+    showCity (show) {
+      if(show === 'show') {
+        this.Map.setPaintProperty('city-neihu', 'circle-opacity', 1);
+        this.Map.setPaintProperty('city-keelung', 'circle-opacity', 1);
+        this.Map.setPaintProperty('city-xizhi', 'circle-opacity', 1);
+        this.Map.setPaintProperty('city-sungshan', 'circle-opacity', 1);
+        this.Map.setPaintProperty('city-nangang', 'circle-opacity', 1);
+      } else {
+        this.Map.setPaintProperty('city-neihu', 'circle-opacity', 0);
+        this.Map.setPaintProperty('city-keelung', 'circle-opacity', 0);
+        this.Map.setPaintProperty('city-xizhi', 'circle-opacity', 0);
+        this.Map.setPaintProperty('city-sungshan', 'circle-opacity', 0);
+        this.Map.setPaintProperty('city-nangang', 'circle-opacity', 0);        
+      }
+    },
+    showShenao (show) {
+      if(show === 'show') {
+        this.Map.setPaintProperty('pollution-shenao', 'circle-opacity', 1);
+      } else {
+        this.Map.setPaintProperty('pollution-shenao', 'circle-opacity', 0);     
+      }
+    },    
+    showPollution (show) {
+      if(show === 'show') {
+        $('.sub_pollution_name').css({
+          'opacity': 1
+        })
+        this.Map.setPaintProperty('pollution-linkou', 'circle-opacity', 1);
+        this.Map.setPaintProperty('pollution-hsieh-ho', 'circle-opacity', 1);
+      } else {
+        $('.sub_pollution_name').css({
+          'opacity': 0
+        })        
+        this.Map.setPaintProperty('pollution-linkou', 'circle-opacity', 0);
+        this.Map.setPaintProperty('pollution-hsieh-ho', 'circle-opacity', 0);     
+      }
+    },
+    showAttraction (show) {
+      if(show === 'show') {
+        this.Map.setPaintProperty('taipei101', 'circle-opacity', 1);        
+        // this.Map.setPaintProperty('memorial-hall', 'circle-opacity', 1);
+      } else {
+        this.Map.setPaintProperty('taipei101', 'circle-opacity', 0);        
+        // this.Map.setPaintProperty('memorial-hall', 'circle-opacity', 0);  
+      }
+    },
     handle_scroll () {
       const vm = this
       const curOffset = window.pageYOffset;
       if(this.isFlyed && curOffset < this.$refs.showMarker.offsetTop - this.wH*0.2){
-        console.count('goInitail')
+        console.count('第一幕');
+        this.Map.setPaintProperty('pollution-shenao', 'circle-opacity', 1);
+        this.Map.setPaintProperty('0702-8csmtl', 'circle-opacity', 0);
+        this.showShenao('show');
+        this.showPollution('close');
+        this.showCity('close');
+        this.showAttraction('close');
         $('.observe, .pollution').css('opacity', 0);
       }
       if(curOffset > this.$refs.showMarker.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToShenao.offsetTop - this.wH*0.2) {
         this.isFlyed = true;
         this.goInitail()
+        this.Map.setPaintProperty('0702-8csmtl', 'circle-opacity', .8);
+        this.Map.setPaintProperty('pollution-shenao', 'circle-opacity', 0);
+        this.showCity('close');
+        this.showShenao('close');
+        this.showPollution('close');
+        this.showAttraction('close');        
         $('.observe, .pollution').css({
-          'width': '10px',
-          'height': '10px',
           'opacity': 1
         });
         $('.station_name').css({
           'opacity': 0
         })            
+        $('.pollution_name').css({
+          'opacity': 0
+        })          
         console.log('tick')
       }
       if(curOffset > this.$refs.FlyToShenao.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToStation.offsetTop - this.wH*0.2) {
-        this.isFlyed = true;
+        this.isFlyed = true;   
+        this.Map.setPaintProperty('keelung2', 'fill-opacity', 1);   
+        this.Map.setPaintProperty('0702-8csmtl', 'circle-opacity', 0); 
+        this.Map.setPaintProperty('pollution-shenao', 'circle-opacity', 1);    
+        this.showCity('show')   
+        this.showPollution('close');
+        this.showAttraction('close')
         this.goShenao();            
       }
       if(curOffset > this.$refs.FlyToStation.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToStation_2.offsetTop - this.wH*0.2) {
         this.goStation();
+        this.Map.setPaintProperty('0702-8csmtl', 'circle-opacity', 0); 
+        this.showCity('show')  
+        this.showPollution('close');
+        this.showAttraction('close')                
         $('.observe, .pollution').css({
-          'width': '10px',
-          'height': '10px',
           'opacity': 1
         });        
         $('.station_name').css({
           'opacity': 1
-        })        
-        this.isFlyed = true;
-      }
-      if(curOffset > this.$refs.FlyToStation_2.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToStation_3.offsetTop - this.wH*0.2){
-        this.goStation_2();    
-        $('.observe, .pollution').css({
-          'width': '10px',
-          'height': '10px',
-          'opacity': 1
-        });  
-        $('.station_name').css({
+        })    
+        $('.pollution_name').css({
           'opacity': 1
         })                 
         this.isFlyed = true;
       }
-      if(curOffset > this.$refs.FlyToStation_3.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToTaipei.offsetTop - this.wH*0.2){
-        this.goStation_3();
+      if(curOffset > this.$refs.FlyToStation_2.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToTaipei.offsetTop - this.wH*0.2){
+        this.goStation_2(); 
+        this.Map.setPaintProperty('0702-8csmtl', 'circle-opacity', 0);    
+        this.showCity('show')    
+        this.showPollution('close');                    
+        this.showAttraction('close')
         $('.observe, .pollution').css({
-          'width': '10px',
-          'height': '10px',
           'opacity': 1
-        }); 
+        });  
         $('.station_name').css({
           'opacity': 1
-        })               
+        })   
+        $('.pollution_name').css({
+          'opacity': 1
+        })                           
         this.isFlyed = true;
-      }      
+      }
       if(curOffset > this.$refs.FlyToTaipei.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToBigTaipei.offsetTop - this.wH*0.2) {
         this.showTaipei();
+        this.Map.setPaintProperty('taipei', 'fill-opacity', 0);
+        this.Map.setPaintProperty('0702-8csmtl', 'circle-opacity', 0);    
+        this.showCity('show')    
+        this.showPollution('close');        
+        this.showAttraction('show')
         $('.observe, .pollution').css({
-          'width': '10px',
-          'height': '10px',
           'opacity': 1
         });       
         $('.station_name').css({
           'opacity': 1
-        })         
+        })
+        $('.pollution_name').css({
+          'opacity': 1
+        })                  
         this.isFlyed = true;
       }
       if(curOffset > this.$refs.FlyToBigTaipei.offsetTop - this.wH*0.2 && curOffset < this.$refs.FlyToBigTaipei.offsetTop + this.wH) {
         $('.observe, .pollution').css({
-          'width': '10px',
-          'height': '10px',
           'opacity': 1
         });
         $('.station_name').css({
-          'opacity': 1
+          'opacity': 0
         })
+        $('.pollution_name').css({
+          'opacity': 1
+        })   
+        this.Map.setPaintProperty('taipei', 'fill-opacity', 1);    
+        this.Map.setPaintProperty('0702-8csmtl', 'circle-opacity', 0);         
+        this.showCity('close')   
+        this.showAttraction('close')
         this.showBigTaipei();
+        this.showPollution('show')
         this.isFlyed = true;
+      }
+      if(curOffset > this.$refs.FlyToBigTaipei.offsetTop + this.wH) {
+        this.map_zIndex = -2;
+      } else {
+        this.map_zIndex = 3
       }
     },    
   },
@@ -437,13 +556,21 @@ export default {
       this.Map.on('load', function (e) {
     // Insert the layer beneath any symbol layer.
         var layers = vm.Map.getStyle().layers;
-        vm.add3Dbuilding()
-        vm.addObserve()
-        vm.addPollution()      
+        // vm.Map.showTileBoundaries = true;
+        // vm.Map.showCollisionBoxes = true;
+        console.log(vm.Map)
         console.log(layers)
+        vm.add3Dbuilding()
+        vm.addObserve()        
+        for(let i = 0; i < vm.TaipeiAttractions.length; i++) {
+          vm.addMarker(vm.TaipeiAttractions[i][0], vm.TaipeiAttractions[i][1], 'observe', vm.ObserveColor, vm.TaipeiAttractions[i][2])
+        }
+        vm.addPollution()      
+        vm.Map.setPaintProperty('0702-8csmtl', 'circle-opacity-transition', {'duration': 333});
+        console.log(layers)
+        // vm.handle_scroll();
       })
       window.addEventListener('scroll', this.handle_scroll);
-      this.handle_scroll();
     })
   }
 }
@@ -455,8 +582,8 @@ export default {
   flex-direction: column;
   align-items: flex-end;
   position: relative;
-  z-index: 0;
   width: 100%;
+  margin-bottom: 50vh;
 }
 #map{
   position: fixed;
@@ -480,43 +607,87 @@ export default {
 }
 .title_main{
   width: 100%;
-  padding: 0 15px;
-  background-clip: content-box;
-  background-color: transparent;
+  padding: 25px 20px;
+  background-color: rgba(#fff, .75);
   @media screen and (min-width: 1024px) {
     width: 60%;  
   }  
 }
 .marker_info{
   position: absolute;
-  left: -80%;
-  bottom: 10vh;
+  left: 15px;
+  bottom: 30px;
   padding: 5px 15px;
   margin: 0;
+  @media screen and (min-width: 1024px) {
+    left: -80%;
+    bottom: 10vh;    
+  }
   li{
     display: flex;
     align-items: center;
     span{
       display: inline-block;
       margin-right: 10px;
-      width: 8px;
-      height: 8px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-    }
-    .observe_site{
-      border-radius: 0;
     }
   }
 }
 .station_name{
   position: absolute;
-  top: -25px;
+  top: -35px;
   left: 0;
   width: 25px;
-  margin-left: -2.5px;
+  margin-left: -.5em;
   white-space: nowrap;
   opacity: 0;
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1em;
+  font-family: Arial, Microsoft JhengHei, sans-serif !important;
+  @media screen and (min-width: 1024px) {
+    font-size: 2em;
+  }
+}
+.pollution_name{
+  position: absolute;
+  top: -35px;
+  left: 0;
+  width: 25px;
+  margin-left: -.5em;
+  white-space: nowrap;
+  opacity: 0;
+  font-weight: bold;
+  font-size: 1em;
+  font-family: Arial, Microsoft JhengHei, sans-serif !important;
+  @media screen and (min-width: 1024px) {
+    font-size: 2em;
+  }  
+}
+.sub_pollution_name{
+  position: absolute;
+  top: -35px;
+  left: 0;
+  width: 25px;
+  margin-left: -.5em;
+  white-space: nowrap;
+  opacity: 0;
+  font-weight: bold;
+  font-size: 1em;
+  font-family: Arial, Microsoft JhengHei, sans-serif !important;
+  @media screen and (min-width: 1024px) {
+    font-size: 2em;
+  }  
+}
+.PM25_progress{
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  img{
+    width: 100%;
+  }
 }
 </style>

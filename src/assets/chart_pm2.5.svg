@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 461.2 42.4" style="enable-background:new 0 0 461.2 42.4;" xml:space="preserve">
+<style type="text/css">
+	.st0{font-family:'NotoSansCJKtc-Regular-B5pc-H';}
+	.st1{font-size:16px;}
+	.st2{font-size:13px;}
+	.st3{fill:url(#SVGID_1_);}
+	.st4{fill:url(#SVGID_2_);}
+	.st5{fill:#555656;}
+	.st6{font-family:'ArialMT';}
+	.st7{font-size:14.9195px;}
+</style>
+<text transform="matrix(1 0 0 1 4.3333 16.5736)"><tspan x="0" y="0" class="st0 st1">PM2.5</tspan><tspan x="0" y="15" class="st0 st2">(µg/m³)</tspan></text>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="336.8333" y1="1767.4249" x2="336.8333" y2="5610.5322" gradientTransform="matrix(0 -1 9.935898e-02 0 -112.011 365.5735)">
+	<stop  offset="1.741293e-02" style="stop-color:#0000FF"/>
+	<stop  offset="6.701889e-02" style="stop-color:#00B3FA"/>
+	<stop  offset="9.268261e-02" style="stop-color:#00CCFA"/>
+	<stop  offset="0.1525" style="stop-color:#36FFC5"/>
+	<stop  offset="0.1971" style="stop-color:#A0FF61"/>
+	<stop  offset="0.2429" style="stop-color:#DEFF24"/>
+	<stop  offset="0.3007" style="stop-color:#FFFF00"/>
+	<stop  offset="0.3574" style="stop-color:#FFD000"/>
+	<stop  offset="0.4287" style="stop-color:#FF9500"/>
+	<stop  offset="0.51" style="stop-color:#FF5500"/>
+	<stop  offset="0.5847" style="stop-color:#FF2F00"/>
+	<stop  offset="0.697" style="stop-color:#9E0000"/>
+	<stop  offset="0.7799" style="stop-color:#B3006B"/>
+	<stop  offset="0.9677" style="stop-color:#FF05FF"/>
+</linearGradient>
+<polygon class="st3" points="445.4,24.2 445.4,33.2 62.3,33.2 62.3,24.2 "/>
+<g>
+	<text transform="matrix(1 0 0 1 62.2743 18.1981)" class="st5 st6 st7">0</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 95.1722 18.1981)" class="st5 st6 st7">10</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 133.1468 18.1981)" class="st5 st6 st7">20</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 171.1219 18.1981)" class="st5 st6 st7">30</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 209.097 18.1981)" class="st5 st6 st7">40</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 247.0721 18.1981)" class="st5 st6 st7">50</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 285.0472 18.1981)" class="st5 st6 st7">60</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 323.0223 18.1981)" class="st5 st6 st7">70</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 360.9974 18.1981)" class="st5 st6 st7">80</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 398.972 18.1981)" class="st5 st6 st7">90</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 431.8695 18.1981)" class="st5 st6 st7">100</text>
+</g>
+</svg>

@@ -29,7 +29,7 @@ export default {
     methods: {
         handleScroll: function(e){
             let currentH = window.pageYOffset
-            if(currentH > (this.$el.offsetTop - window.innerHeight - 200) && currentH < (this.$el.offsetTop + window.innerHeight)){
+            if(currentH > (this.$el.offsetTop - window.innerHeight) && currentH < (this.$el.offsetTop + window.innerHeight)){
                 this.opacity = 1
             }
             else{
@@ -69,7 +69,7 @@ export default {
 
 <style scoped>
     .fixed-background{
-        height: 100%;
+        height: 100vh;
         position: relative;
         display: flex;
         justify-content: center;
@@ -98,13 +98,14 @@ export default {
         position: fixed;
         width: 100%;
         height: 100%;
+        background-color: #f4f4f4;
         background-position: center center;
         background-repeat: no-repeat;
         background-size: cover;
         top: 0;
         left: 0;
-        z-index: -1;
-        transition: opacity 0.7s ease;
+        z-index: 2;
+        transition: opacity 444ms ease;
     }
 
     @media screen and (max-width: 767px){
